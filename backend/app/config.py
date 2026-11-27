@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     groq_api_key: str
     groq_fast_model: str = "openai/gpt-oss-20b"
     groq_smart_model: str = "openai/gpt-oss-120b"
-    gpu_worker_url: str = ""
+    frontend_url: str = "http://localhost:3000"
 
     class Config:
         env_file = ".env"

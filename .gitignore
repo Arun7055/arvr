@@ -1,0 +1,53 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python / FastAPI
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.sqlite3
+*.db
+
+# Node / Next.js (Frontend)
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ML Weights, Datasets & Notebooks
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+.ipynb_checkpoints/
+
+# Local Temp Storage
+storage/
+tmp/
+temp/
+
+# OS & Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

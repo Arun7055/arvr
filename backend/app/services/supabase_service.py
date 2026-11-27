@@ -12,11 +12,3 @@ def upload_asset(file_bytes: bytes, folder: str, ext: str, content_type: str) ->
         file_options={"content-type": content_type, "upsert": "false"},
     )
     return supabase.storage.from_(settings.supabase_bucket).get_public_url(path)
-
-def save_generation(payload: dict) -> dict:
-    res = supabase.table("generations").insert(payload).execute()
-    return res.data[0]
-
-def get_fabric(fabric_id: str) -> dict | None:
-    res = supabase.table("fabrics").select("*").eq("id", fabric_id).execute()
-    return res.data[0] if res.data else None
