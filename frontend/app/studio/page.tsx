@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, useGLTF, Center, Bounds } from "@react-three/drei";
 import { api } from "@/lib/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Sparkles } from "lucide-react";
@@ -16,38 +17,33 @@ interface PBRConfig {
   styling_note?: string;
 }
 
-function GarmentMesh({ garment, pbr }: { garment: string; pbr: PBRConfig }) {
-  const matProps = {
-    color: pbr.color_hex || "#8A9A5B",
-    roughness: pbr.roughness ?? 0.85,
-    metalness: pbr.metalness ?? 0.05,
-  };
+function GarmentModel({ garment, pbr }: { garment: string; pbr: PBRConfig }) {
+  const { scene } = useGLTF(`/models/${garment}.glb`);
+  const clonedScene = useMemo(() => scene.clone(), [scene]);
+
+  useEffect(() => {
+    const material = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(pbr.color_hex || "#8A9A5B"),
+      roughness: pbr.roughness ?? 0.85,
+      metalness: pbr.metalness ?? 0.05,
+    });
+
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.material = material;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
+    });
+
+    return () => material.dispose();
+  }, [clonedScene, pbr]);
 
   return (
-    <group position={[0, -0.2, 0]}>
-      {/* Torso */}
-      <mesh position={[0, 0.2, 0]} castShadow>
-        <cylinderGeometry args={[0.62, 0.58, 1.55, 32]} />
-        <meshStandardMaterial {...matProps} />
-      </mesh>
-      {/* Left Sleeve */}
-      <mesh position={[-0.85, 0.45, 0]} rotation={[0, 0, 0.45]} castShadow>
-        <cylinderGeometry args={[0.2, 0.17, garment === "tshirt" ? 0.65 : 1.15, 24]} />
-        <meshStandardMaterial {...matProps} />
-      </mesh>
-      {/* Right Sleeve */}
-      <mesh position={[0.85, 0.45, 0]} rotation={[0, 0, -0.45]} castShadow>
-        <cylinderGeometry args={[0.2, 0.17, garment === "tshirt" ? 0.65 : 1.15, 24]} />
-        <meshStandardMaterial {...matProps} />
-      </mesh>
-      {/* Hood / Collar */}
-      {garment === "hoodie" && (
-        <mesh position={[0, 1.1, -0.15]} castShadow>
-          <sphereGeometry args={[0.42, 24, 24]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-      )}
-    </group>
+    <Center>
+      <primitive object={clonedScene} />
+    </Center>
   );
 }
 
@@ -100,7 +96,11 @@ export default function StudioPage() {
             <Canvas shadows camera={{ position: [0, 0.4, 3.6], fov: 45 }}>
               <ambientLight intensity={0.6} />
               <directionalLight position={[4, 6, 4]} intensity={1.2} castShadow />
-              <GarmentMesh garment={garment} pbr={pbr} />
+              <Suspense fallback={null}>
+                <Bounds fit clip observe margin={1.2}>
+                  <GarmentModel garment={garment} pbr={pbr} />
+                </Bounds>
+              </Suspense>
               <ContactShadows position={[0, -1.1, 0]} opacity={0.4} scale={6} blur={2} />
               <Environment preset="studio" />
               <OrbitControls enablePan={false} minDistance={2.2} maxDistance={6} />
@@ -119,7 +119,7 @@ export default function StudioPage() {
               <div>
                 <label className="text-xs font-medium text-[var(--muted)]">Base Garment</label>
                 <div className="mt-1.5 grid grid-cols-3 gap-2">
-                  {["hoodie", "tshirt", "jacket"].map((g) => (
+                  {["hoodie", "tshirt", "shorts"].map((g) => (
                     <button
                       key={g}
                       type="button"
