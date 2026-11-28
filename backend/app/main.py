@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import studio, shopper, tryon, wardrobe
+from app.routers import studio, shopper, tryon, wardrobe, auth
 from app.services.supabase_service import supabase
 from app.config import settings
 
@@ -20,6 +20,7 @@ app.include_router(studio.router, prefix="/api/studio", tags=["1. 3D Studio"])
 app.include_router(shopper.router, prefix="/api/shopper", tags=["2. AI Shopper"])
 app.include_router(tryon.router, prefix="/api/tryon", tags=["3. AR Try-On"])
 app.include_router(wardrobe.router, prefix="/api/wardrobe", tags=["4. Digital Wardrobe"])
+app.include_router(auth.router, prefix="/api/auth", tags=["0. Auth"])
 
 @app.get("/")
 def root():

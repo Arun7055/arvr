@@ -1,0 +1,16 @@
+{
+    "name": "Virtual Fashion Studio",
+    "short_name": "FashionAI",
+    "description": "AI-driven 3D garment customizer, personal shopper, AR try-on, and digital wardrobe.",
+    "start_url": "/studio",
+    "display": "standalone",
+    "background_color": "#09090b",
+    "theme_color": "#09090b",
+    "icons": [
+      {
+        "src": "/favicon.ico",
+        "sizes": "64x64 32x32 24x24 16x16",
+        "type": "image/x-icon"
+      }
+    ]
+  }

@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     groq_fast_model: str = "openai/gpt-oss-20b"
     groq_smart_model: str = "openai/gpt-oss-120b"
     frontend_url: str = "http://localhost:3000"
+    jwt_secret: str = "dev-secret-change-me"
 
     class Config:
         env_file = ".env"
